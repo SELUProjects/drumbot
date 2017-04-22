@@ -22,7 +22,7 @@ def drumbot():
 
 @arduino.route('/play/<int:beat>')
 def play(beat):
-    striketime = .10
+    striketime = .15
     fastbeat = .15 - striketime
     midbeat = .30 - striketime
     slowbeat = .60 - striketime
