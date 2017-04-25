@@ -1,0 +1,169 @@
+{% extends "layout.html" %}
+{% block body %}
+
+  <div class="container">
+    <h1>This Machine Kills Fascists</h1>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <ul class="list-group radio-group">
+          <li class="radio list-group-item lstick radio-beat" data-value="1">Left Drum Beat</li>
+          <li class="radio list-group-item rstick radio-beat" data-value="2">Right Drum Beat</li>
+          <li class="radio list-group-item tamb radio-beat" data-value="3">Tamborine</li>
+          <input type="text" id="radio-value" name="onebeat" hidden/>
+        </ul>
+        
+        <span id="result">?</span>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div class="col-sm-6">
+
+        <div class="radio-group col-sm-3 beat" id="0">
+          <div class="radio lstick" data-value="0"></div>
+          <div class="radio rstick" data-value="1"></div>
+          <div class="radio tamb" data-value="2"></div>
+          <br/>
+          <input type="text" id="radio-value-0" name="radio-value-0" hidden/>
+        </div>
+        
+        <div class="radio-group col-sm-3 beat" id="1">
+          <div class="radio lstick" data-value="0"></div>
+          <div class="radio rstick" data-value="1"></div>
+          <div class="radio tamb" data-value="2"></div>
+          <br/>
+          <input type="text" id="radio-value-1" name="radio-value-1" hidden/>
+        </div>
+        
+        <div class="radio-group col-sm-3 beat" id="2">
+          <div class="radio lstick" data-value="0"></div>
+          <div class="radio rstick" data-value="1"></div>
+          <div class="radio tamb" data-value="2"></div>
+          <br/>
+          <input type="text" id="radio-value-2" name="radio-value-2" hidden/>
+        </div>
+        
+        <div class="radio-group col-sm-3 beat" id="3">
+          <div class="radio lstick" data-value="0"></div>
+          <div class="radio rstick" data-value="1"></div>
+          <div class="radio tamb" data-value="2"></div>
+          <br/>
+          <input type="text" id="radio-value-3" name="radio-value-3" hidden/>
+        </div>
+
+      </div>
+
+      <div class="col-sm-6">
+      
+        <div class="radio-group col-sm-3 beat" id="4">
+          <div class="radio lstick" data-value="0"></div>
+          <div class="radio rstick" data-value="1"></div>
+          <div class="radio tamb" data-value="2"></div>
+          <br/>
+          <input type="text" id="radio-value-4" name="radio-value-4" hidden/>
+        </div>
+        
+        <div class="radio-group col-sm-3 beat" id="5">
+          <div class="radio lstick" data-value="0"></div>
+          <div class="radio rstick" data-value="1"></div>
+          <div class="radio tamb" data-value="2"></div>
+          <br/>
+          <input type="text" id="radio-value-5" name="radio-value-5" hidden/>
+        </div>
+        
+        <div class="radio-group col-sm-3 beat" id="6">
+          <div class="radio lstick" data-value="0"></div>
+          <div class="radio rstick" data-value="1"></div>
+          <div class="radio tamb" data-value="2"></div>
+          <br/>
+          <input type="text" id="radio-value-6" name="radio-value-6" hidden/>
+        </div>
+        
+        <div class="radio-group col-sm-3 beat" id="7">
+          <div class="radio lstick" data-value="0"></div>
+          <div class="radio rstick" data-value="1"></div>
+          <div class="radio tamb" data-value="2"></div>
+          <br/>
+          <input type="text" id="radio-value-7" name="radio-value-7" hidden/>
+        </div>
+
+
+        <!-- <span id="rhythm_pattern">?</span> -->
+        <br/>
+        <label for="name">Name: </label><input type="text" id="name" name="name" />
+        <label for="loop">Loop: </label><input type="text" id="loop" name="loop" />
+        <a class="btn" href="#" id="playrhythm">Play Rhythm</a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+
+    $('.radio-group .radio').click(function(){
+        $(this).parent().find('.radio').removeClass('selected');
+        $(this).addClass('selected');
+        var val = $(this).attr('data-value');
+        console.log(val);
+        $(this).parent().find('input').val(val);
+        var id = $(this).parent().find('input').attr('id')
+        $("#" + id).val(val);
+    });
+
+
+    $(function() {
+      var submit_beat = function(e) {
+        $.getJSON($SCRIPT_ROOT + '/arduino/one_beat', {
+          a: $('input[name=onebeat]').val()
+        }, function(data) {
+          $('#result').text(data.result);
+          $('input[name=onebeat]').focus().select();
+        });
+        return false;
+      };
+      $('li.radio-beat').bind('click', submit_beat);
+      $('input[type=text]').bind('keydown', function(e) {
+        if (e.keyCode == 13) {
+          submit_beat(e);
+        }
+      });
+      $('input[name=onebeat]').focus();
+    });
+
+
+    $(function() {
+    var submit_rhythm = function(e) {
+      $.getJSON($SCRIPT_ROOT + '/arduino/rhythm', {
+        0: $('input[name=radio-value-0]').val(),
+        1: $('input[name=radio-value-1]').val(),
+        2: $('input[name=radio-value-2]').val(),
+        3: $('input[name=radio-value-3]').val(),
+        4: $('input[name=radio-value-4]').val(),
+        5: $('input[name=radio-value-5]').val(),
+        6: $('input[name=radio-value-6]').val(),
+        7: $('input[name=radio-value-7]').val(),
+        tempo: 180,
+        strike: 6,
+        name: $('input[name=name]').val(),
+        loop: $('input[name=loop]').val()
+      }, function(data) {
+        console.log(data.result)
+        $('#rhythm_pattern').text(data.result);
+      });
+      return false;
+    };
+    $('a#playrhythm').bind('click', submit_rhythm);
+    $('input[type=text]').bind('keydown', function(e) {
+      if (e.keyCode == 13) {
+        submit_rhythm(e);
+      }
+    });
+  });
+
+  </script>
+
+{% endblock %}
