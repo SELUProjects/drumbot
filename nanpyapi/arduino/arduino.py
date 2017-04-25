@@ -76,6 +76,7 @@ def play_rhythm():
 
         with open('/home/pi/nanpyapi/arduino/songs/list_beats.csv', 'a', newline='') as c:
             writer=csv.writer(c)
+            writer.writerow([])
             writer.writerow([name,saved_name])
     for i in range(loop):
         read_beats(rhythm)
